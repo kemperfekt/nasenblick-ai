@@ -29,19 +29,22 @@ if query:
         # Dummy: Nur statische Daten lesen (du kannst das später mit deinen .md-Dateien erweitern)
         documents = SimpleDirectoryReader("data").load_data()
 
-from llama_index.embeddings.openai import OpenAIEmbedding
+        from llama_index.embeddings.openai import OpenAIEmbedding
 
-# Erstelle dein Embedding-Modell mit API-Key (aus st.secrets)
-embed_model = OpenAIEmbedding(api_key=st.secrets["OPENAI_API_KEY"])
+        # Erstelle dein Embedding-Modell mit API-Key (aus st.secrets)
+        embed_model = OpenAIEmbedding(api_key=st.secrets["OPENAI_API_KEY"])
 
-# Service Context inkl. Embedding und LLM
-service_context = ServiceContext.from_defaults(
-    llm=OpenAI(temperature=0.7, api_key=st.secrets["OPENAI_API_KEY"]),
-    embed_model=embed_model
-)
-
-        
-        service_context = ServiceContext.from_defaults(llm=OpenAI(temperature=0.7))
+        # Service Context inkl. Embedding und LLM
+        service_context = ServiceContext.from_defaults(
+            llm=OpenAI(temperature=0.7, api_key=st.secrets["OPENAI_API_KEY"]),
+            embed_model=embed_model
+        )
+        # 🔍 Index erstellen
         index = VectorStoreIndex.from_documents(documents, service_context=service_context)
+        response = index.query(query)
+        st.success(response.response)
+        
+    service_context = ServiceContext.from_defaults(llm=OpenAI(temperature=0.7))
+        i    ndex = VectorStoreIndex.from_documents(documents, service_context=service_context)
         response = index.query(query)
         st.success(response.response)
