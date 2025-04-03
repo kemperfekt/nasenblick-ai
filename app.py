@@ -1,6 +1,19 @@
+import nltk
+import os
+
+# Stelle sicher, dass punkt an einem beschreibbaren Ort liegt
+nltk_data_path = os.path.join(os.getcwd(), "nltk_data")
+nltk.data.path.append(nltk_data_path)
+
+# Nur wenn nötig downloaden (um es nicht jedes Mal zu versuchen)
+try:
+    nltk.data.find("tokenizers/punkt")
+except LookupError:
+    nltk.download("punkt", download_dir=nltk_data_path)
+
 import streamlit as st
 import openai
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext, GPTVectorStoreIndex
 from llama_index.llms import OpenAI
 
 # API-Key aus Streamlit Secrets
