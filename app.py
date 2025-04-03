@@ -1,50 +1,37 @@
-import nltk
 import os
+import nltk
+import streamlit as st
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index.llms.openai import OpenAI
 
-# Stelle sicher, dass punkt an einem beschreibbaren Ort liegt
+# Ensure the 'punkt' tokenizer is available
 nltk_data_path = os.path.join(os.getcwd(), "nltk_data")
 nltk.data.path.append(nltk_data_path)
-
-# Nur wenn nötig downloaden (um es nicht jedes Mal zu versuchen)
 try:
     nltk.data.find("tokenizers/punkt")
 except LookupError:
     nltk.download("punkt", download_dir=nltk_data_path)
 
-import streamlit as st
-import openai
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
-from llama_index.llms.openai import OpenAI
+# Check for OpenAI API key in Streamlit secrets
+if "OPENAI_API_KEY" not in st.secrets:
+    st.warning("⚠️ Kein OpenAI API-Key gefunden. Bitte .streamlit/secrets.toml einrichten.")
+else:
+    # Initialize the OpenAI LLM with the API key from secrets
+    llm = OpenAI(model="gpt-3.5-turbo", temperature=0.7)
+    service_context = ServiceContext.from_defaults(llm=llm)
 
-# API-Key aus Streamlit Secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+    # Streamlit UI setup
+    st.title("🐶 Nasenblick KI")
+    st.write("Stelle mir deine Frage zur Hundeerziehung!")
 
-st.title("🐶 Nasenblick KI")
-st.write("Stelle mir deine Frage zur Hundeerziehung!")
-
-query = st.text_input("Was möchtest du wissen?")
-
-if query:
-    with st.spinner("Denke nach..."):
-        # Dummy: Nur statische Daten lesen (du kannst das später mit deinen .md-Dateien erweitern)
-        documents = SimpleDirectoryReader("data").load_data()
-
-        from llama_index.embeddings.openai import OpenAIEmbedding
-
-        # Erstelle dein Embedding-Modell mit API-Key (aus st.secrets)
-        embed_model = OpenAIEmbedding(api_key=st.secrets["OPENAI_API_KEY"])
-
-        # Service Context inkl. Embedding und LLM
-        service_context = ServiceContext.from_defaults(
-            llm=OpenAI(temperature=0.7, api_key=st.secrets["OPENAI_API_KEY"]),
-            embed_model=embed_model
-        )
-        # 🔍 Index erstellen
-        index = VectorStoreIndex.from_documents(documents, service_context=service_context)
-        response = index.query(query)
-        st.success(response.response)
-        
-    service_context = ServiceContext.from_defaults(llm=OpenAI(temperature=0.7))
-    index = VectorStoreIndex.from_documents(documents, service_context=service_context)
-    response = index.query(query)
-    st.success(response.response)
+    query = st.text_input("Was möchtest du wissen?")
+    if query:
+        with st.spinner("Denke nach..."):
+            # Load documents from the 'data' directory
+            documents = SimpleDirectoryReader("data").load_data()
+            # Create a vector store index from the documents
+            index = VectorStoreIndex.from_documents(documents, service_context=service_context)
+            # Query the index with the user's input
+            response = index.query(query)
+            # Display the response
+            st.success(response.response)
