@@ -1,3 +1,4 @@
 streamlit==1.32.2
 openai==1.14.3
-llama-index==0.10.28
+llama-index==0.9.48.post4
+nltk
