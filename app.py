@@ -1,6 +1,6 @@
 import streamlit as st
 import openai
-from llama_index import GPTVectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
 from llama_index.llms import OpenAI
 
 # API-Key aus Streamlit Secrets
