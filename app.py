@@ -1,7 +1,16 @@
 import streamlit as st
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
-from llama_index.llms import OpenAI
 import openai
+import nltk
+import os
+
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext
+from llama_index.llms.openai import OpenAI
+
+# Sicherstellen, dass NLTK-Tokenizer geladen werden können
+nltk_data_dir = "./nltk_data"
+os.makedirs(nltk_data_dir, exist_ok=True)
+nltk.data.path.append(nltk_data_dir)
+nltk.download("punkt", download_dir=nltk_data_dir)
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
