@@ -45,6 +45,6 @@ if query:
         st.success(response.response)
         
     service_context = ServiceContext.from_defaults(llm=OpenAI(temperature=0.7))
-        index = VectorStoreIndex.from_documents(documents, service_context=service_context)
-        response = index.query(query)
-        st.success(response.response)
+    index = VectorStoreIndex.from_documents(documents, service_context=service_context)
+    response = index.query(query)
+    st.success(response.response)

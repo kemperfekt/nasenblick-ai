@@ -1,1 +1,15 @@
 .streamlit/secrets.toml
+
+# Ignore virtual environments
+venv/
+.env/
+.venv/
+
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VSCode settings
+.vscode/
