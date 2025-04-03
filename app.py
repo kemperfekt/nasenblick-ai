@@ -14,7 +14,7 @@ except LookupError:
 import streamlit as st
 import openai
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, ServiceContext, GPTVectorStoreIndex
-from llama_index.llms import OpenAI
+from llama_index.llms.openai import OpenAI
 
 # API-Key aus Streamlit Secrets
 openai.api_key = st.secrets["OPENAI_API_KEY"]
