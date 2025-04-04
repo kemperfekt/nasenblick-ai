@@ -6,7 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import DirectoryLoader
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate  # ✅ Wichtig für korrekten Prompt
+from langchain.prompts import PromptTemplate  # ✅ Wichtig für den richtigen Prompt
 
 # 📌 Setze deinen OpenAI-Key über Streamlit Secrets
 openai_api_key = st.secrets["OPENAI_API_KEY"]
@@ -62,8 +62,8 @@ Antworte ruhig, einfach, empathisch und auf den Punkt. Sprich wie in einem Gespr
             chain_type_kwargs={"prompt": prompt}
         )
 
-        result = qa_chain.run(query)
-        st.success(result["result"])
+        result = qa_chain(query)  # Verwende die Funktionsweise von langchain korrekt
+        st.success(result['result'])  # Greife auf das 'result' des Rückgabewerts zu
 
         # Optional: Zeige verwendete Inhalte (Debug/Transparenz)
         with st.expander("🔎 Verwendete Wissensabschnitte"):
