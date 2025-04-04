@@ -1,3 +1,0 @@
-# Warum bellt mein Hund an der Tür?
-
-Der Hund bellt an der Tür, um sein Revier zu verteidigen...
