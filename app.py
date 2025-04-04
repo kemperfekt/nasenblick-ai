@@ -38,3 +38,9 @@ if query:
 
         qa = RetrievalQA.from_chain_type(
             llm=client.chat.completions,
+            chain_type="stuff",
+            retriever=retriever,
+        )
+
+        response = qa.run(query)
+        st.success(response)
