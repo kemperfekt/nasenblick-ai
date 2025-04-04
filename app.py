@@ -6,6 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import DirectoryLoader
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate  # ✅ Wichtig für korrekten Prompt
 
 # 📌 Setze deinen OpenAI-Key über Streamlit Secrets
 openai_api_key = st.secrets["OPENAI_API_KEY"]
@@ -36,11 +37,20 @@ if query:
         retriever = vectorstore.as_retriever()
 
         # 💡 SYSTEM PROMPT
-        system_prompt = (
-            "Du bist ein empathischer Hundetrainer, der nach der Nasenblick-Methode arbeitet. "
-            "Nutze nur bereitgestelltes Wissen. "
-            "Sprich ruhig, einfach und freundlich. "
-            "Antworte auf den Punkt – wie im Gespräch – und gib keine langen Artikel wieder."
+        prompt = PromptTemplate(
+            input_variables=["context", "question"],
+            template="""
+Du bist ein empathischer Hundetrainer, der nach der Nasenblick-Methode arbeitet.
+Nutze ausschließlich das bereitgestellte Wissen aus dem folgenden Kontext, um die Frage zu beantworten.
+
+Kontext:
+{context}
+
+Frage:
+{question}
+
+Antworte ruhig, einfach, empathisch und auf den Punkt. Sprich wie in einem Gespräch, nicht wie in einem Artikel.
+"""
         )
 
         llm = ChatOpenAI(openai_api_key=openai_api_key, temperature=0.3)
@@ -49,10 +59,10 @@ if query:
             chain_type="stuff",
             retriever=retriever,
             return_source_documents=True,
-            chain_type_kwargs={"prompt": system_prompt}
+            chain_type_kwargs={"prompt": prompt}
         )
 
-        result = qa_chain(query)
+        result = qa_chain.run(query)
         st.success(result["result"])
 
         # Optional: Zeige verwendete Inhalte (Debug/Transparenz)
