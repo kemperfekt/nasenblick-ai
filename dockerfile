@@ -1,12 +1,13 @@
 # Use a Python base image
 FROM python:3.12-slim
 
-# Install system dependencies for faiss-cpu
+# Install system dependencies, including Faiss and swig
 RUN apt-get update && apt-get install -y \
     build-essential \
     swig \
     libomp-dev \
     python3-dev \
+    libfaiss-dev \
     && rm -rf /var/lib/apt/lists/*  # Clean up the apt cache to keep the image size smaller
 
 # Set the working directory in the container
