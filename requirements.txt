@@ -1,5 +1,8 @@
 streamlit==1.32.2
-openai==1.14.3
-langchain==0.1.14
+openai==0.28.1
+langchain==0.0.208
 faiss-cpu==1.7.4
-tiktoken==0.9.0
+python-dotenv==1.0.1
+unstructured[md]==0.10.25   
+tiktoken==0.5.1             
+
