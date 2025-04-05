@@ -8,6 +8,7 @@ from weaviate.auth import AuthApiKey
 # 📌 Load environment variables from .env file
 load_dotenv()  # This will load variables from .env file into environment
 openai_api_key = os.getenv("OPENAI_API_KEY")  # Get OpenAI API Key from .env
+print(f"Loaded OpenAI API Key: {openai_api_key}")
 weaviate_url = os.getenv("WEAVIATE_URL")  # Get Weaviate URL from .env
 weaviate_api_key = os.getenv("WEAVIATE_API_KEY")  # Get Weaviate API Key from .env
 
