@@ -18,10 +18,10 @@ st.write("Hier findest Du Hilfe bei der Erziehung Deines Hundes:")
 
 query = st.text_input("Wie lautet Dein Anliegen:")
 
-# Connect to Weaviate Cloud using the API key
+# Connect to Weaviate Cloud using the API key (Updated for v4)
 client = weaviate.Client(
     url=weaviate_url,
-    auth_client_secret=AuthApiKey(api_key=weaviate_api_key),
+    auth=weaviate.auth.AuthApiKey(api_key=weaviate_api_key),
     additional_headers={
         "X-Openai-Api-Key": openai_api_key  # Add the OpenAI API key explicitly for vectorization
     }
