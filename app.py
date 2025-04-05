@@ -8,7 +8,7 @@ from weaviate.auth import AuthApiKey
 # 📌 Load environment variables from .env file
 load_dotenv()  # This will load variables from .env file into environment
 openai_api_key = os.getenv("OPENAI_API_KEY")  # Get OpenAI API Key from .env
-print(f"Loaded OpenAI API Key: {openai_api_key}")
+print(f"Loaded OpenAI API Key from .env: {openai_api_key}")  # Should match the key in your .env file
 weaviate_url = os.getenv("WEAVIATE_URL")  # Get Weaviate URL from .env
 weaviate_api_key = os.getenv("WEAVIATE_API_KEY")  # Get Weaviate API Key from .env
 
@@ -43,12 +43,15 @@ def query_weaviate(query):
 
 # Function to interact with OpenAI API for answering
 def get_openai_answer(query, context):
-    response = openai.Completion.create(
-        model="text-davinci-003",  # or another model of your choice
-        prompt=f"Use the following context to answer the question: {context}\n\nQuestion: {query}",
-        max_tokens=150
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Use an appropriate model such as 'gpt-3.5-turbo' or 'gpt-4'
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": query},
+            {"role": "assistant", "content": context},
+        ]
     )
-    return response.choices[0].text.strip()
+    return response['choices'][0]['message']['content']
 
 if query:
     with st.spinner("Ich denke nach..."):
