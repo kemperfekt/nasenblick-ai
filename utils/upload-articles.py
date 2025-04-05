@@ -4,13 +4,19 @@ from dotenv import load_dotenv
 
 # 📌 Load environment variables from .env file
 load_dotenv()
+openai_api_key = os.getenv("OPENAI_API_KEY")  # Get OpenAI API Key from .env
 weaviate_url = os.getenv("WEAVIATE_URL")  # Get Weaviate URL from .env
 weaviate_api_key = os.getenv("WEAVIATE_API_KEY")  # Get Weaviate API Key from .env
 
-# Connect to Weaviate
+# Ensure the OpenAI API Key is set correctly
+if not openai_api_key:
+    raise ValueError("OpenAI API Key not found in .env file")
+
+# Connect to Weaviate using the API Key for authentication
 client = weaviate.Client(
     url=weaviate_url,
-    auth_client_secret=weaviate.AuthApiKey(api_key=weaviate_api_key)
+    auth_client_secret=weaviate.AuthApiKey(api_key=weaviate_api_key),  # Authentication with Weaviate API key
+    additional_headers={"X-OpenAI-Api-Key": openai_api_key}  # Pass OpenAI API key for vectorization
 )
 
 # Manually create a list of articles with just title and content
@@ -37,7 +43,7 @@ def insert_article(title, content):
         "content": content
     }
 
-    # Add the article to Weaviate
+    # Add the article to Weaviate under the "Article" class
     client.data_object.create(
         data_object=article_data,
         class_name="Article"
