@@ -1,14 +1,15 @@
-import os
+import os, json
 import streamlit as st
 from dotenv import load_dotenv
 import weaviate
+#from weaviate.auth import AuthApiKey
+from weaviate.classes.init import Auth
 import openai
-from weaviate.auth import AuthApiKey
+
 
 # 📌 Load environment variables from .env file
 load_dotenv()  # This will load variables from .env file into environment
 openai_api_key = os.getenv("OPENAI_API_KEY")  # Get OpenAI API Key from .env
-print(f"Loaded OpenAI API Key from .env: {openai_api_key}")  # Should match the key in your .env file
 weaviate_url = os.getenv("WEAVIATE_URL")  # Get Weaviate URL from .env
 weaviate_api_key = os.getenv("WEAVIATE_API_KEY")  # Get Weaviate API Key from .env
 
@@ -17,41 +18,57 @@ st.title("🐶 Nasenblick KI")
 st.write("Hier findest Du Hilfe bei der Erziehung Deines Hundes:")
 
 query = st.text_input("Wie lautet Dein Anliegen:")
+context = "Empathischer Hundetrainer mit ruhiger Stimme"
+
 
 # Connect to Weaviate Cloud using the API key
-client = weaviate.Client(
-    url=weaviate_url,
-    auth_client_secret=AuthApiKey(api_key=weaviate_api_key),
-    additional_headers={
+#client = weaviate.connect_to_weaviate_cloud(
+#    cluster_url=weaviate_url,
+#    auth_credentials=AuthApiKey(weaviate_api_key),
+#    headers={
+#        "X-Openai-Api-Key": openai_api_key  # Add the OpenAI API key explicitly for vectorization
+#   }
+#)
+
+client = weaviate.connect_to_weaviate_cloud(
+    cluster_url=weaviate_url,
+    auth_credentials=Auth.api_key(weaviate_api_key),
+    headers={
         "X-Openai-Api-Key": openai_api_key  # Add the OpenAI API key explicitly for vectorization
-    }
+   }
 )
 
 # Check if the connection is working
 if client.is_ready():
-    st.success("Weaviate connected successfully!")
+    st.success("Connected to Weaviate successfully!")
 
 # Retrieve articles from Weaviate (make sure collection name is correct)
 def query_weaviate(query):
-    # Perform a query to Weaviate to find relevant articles
-    result = client.query.get("Article", ["title", "content"])  # Get the fields you want to retrieve
-    result = result.with_near_text({
-        'concepts': [query]
-    }).with_limit(3).do()  # Limit to top 3 relevant articles
+    collection = client.collections.get("Article")
 
-    return result
+    result = collection.query.near_text(
+    query=query,
+    limit=2
+    )
+    #return 
+    #for obj in result.objects:
+    #    st.write((json.dumps(obj.properties, indent=2)))
 
 # Function to interact with OpenAI API for answering
 def get_openai_answer(query, context):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # Use an appropriate model such as 'gpt-3.5-turbo' or 'gpt-4'
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": query},
-            {"role": "assistant", "content": context},
-        ]
+    # Set the OpenAI API key
+    openai_api_key = openai.api_key,
+    print("Open AI Key set")
+
+    # Use the Completion API
+    response = openai.Completion.create(
+        model="gpt-3.5-turbo",  # For GPT-3.5 or GPT-4, you can use different models as needed
+        prompt=f"Context: {context}\n\nQuestion: {query}",
+        max_tokens=150
     )
-    return response['choices'][0]['message']['content']
+    
+    # Return the text response from the model
+    return response['choices'][0]['text'].strip()
 
 if query:
     with st.spinner("Ich denke nach..."):
@@ -61,7 +78,6 @@ if query:
         # Log the raw Weaviate result to debug
         st.write(weaviate_result)  # This will show the raw result from Weaviate for debugging
 
-        # Check if the result contains any data
         if weaviate_result and 'data' in weaviate_result and 'Get' in weaviate_result['data'] and 'Article' in weaviate_result['data']['Get']:
             # Assuming your Weaviate data structure is correct, adjust 'content' if necessary
             context = "\n".join([doc['content'] for doc in weaviate_result['data']['Get']['Article']])
@@ -70,10 +86,7 @@ if query:
             answer = get_openai_answer(query, context)
             st.success(answer)
 
-            # Optional: Show retrieved documents for transparency
-            with st.expander("🔎 Verwendete Wissensabschnitte"):
-                for doc in weaviate_result['data']['Get']['Article']:
-                    st.markdown(f"• {doc['title']}")
-                    st.text(doc['content'][:500] + "...")
         else:
             st.warning("Keine relevanten Artikel gefunden. Bitte versuche es mit einer anderen Anfrage.")
+
+client.close()
