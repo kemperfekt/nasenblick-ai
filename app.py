@@ -19,7 +19,7 @@ if st.button('Get Answer'):
         # Pass the user input to the OpenAI responses.create function
         response = client.responses.create(
             model="gpt-4",  # You can replace this with the correct model you're using
-            input=user_query  # The user input
+            input=query  # The user input
         )
         
         # Get the output text from the response
