@@ -41,7 +41,7 @@ client = weaviate.connect_to_weaviate_cloud(
 
 # Check if the connection is working
 if client.is_ready():
-    st.success("Verbindung zu Weaviate erfolgreich hergestellt.")
+    #st.success("Verbindung zu Weaviate erfolgreich hergestellt.")
 
 # Retrieve articles from Weaviate (make sure collection name is correct)
     def query_weaviate(query):
@@ -121,7 +121,7 @@ if query:
     with st.spinner("Ich denke nach..."):
         # Query Weaviate for relevant content
         weaviate_result = query_weaviate(query)
-        # st.write("Weaviate:", weaviate_result)
+        st.write("Weaviate:", weaviate_result)
 
         if weaviate_result:  # Check if the result is not empty
             # Assuming `weaviate_result` is a list of articles with 'title' and 'content'
