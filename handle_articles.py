@@ -15,17 +15,18 @@ client = weaviate.connect_to_weaviate_cloud(
 )
 
 # Function to delete all articles in the collection
+# Function to delete all articles in the collection
 def delete_all_articles():
     # Query to get all objects in the "Article" class
-    results = client.query.get("Article", ["_id"]).do()
+    result = client.query.get("Article", ["_id"]).with_limit(1000).do()  # Limiting to 1000 articles, adjust as needed
 
-    if 'data' in results and 'Get' in results['data'] and 'Article' in results['data']['Get']:
+    # Check if the result contains the expected data
+    if 'data' in result and 'Get' in result['data'] and 'Article' in result['data']['Get']:
         # Get the UUIDs of all articles
-        article_uuids = [obj['_id'] for obj in results['data']['Get']['Article']]
+        article_uuids = [obj['_id'] for obj in result['data']['Get']['Article']]
         
-        # Perform batch delete
         if article_uuids:
-            # Create a batch delete request for all UUIDs
+            # Perform batch delete for each article
             with client.batch as batch:
                 for uuid in article_uuids:
                     batch.delete("Article", uuid)
