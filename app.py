@@ -17,8 +17,8 @@ weaviate_api_key = os.getenv("WEAVIATE_API_KEY")  # Get Weaviate API Key from .e
 st.title("🐶 Nasenblick KI")
 st.write("Hier findest Du Hilfe bei der Erziehung Deines Hundes:")
 
-query = st.text_input("Wie lautet Dein Anliegen:")
-context = "Empathischer Hundetrainer mit ruhiger Stimme"
+query = st.text_input("Wie lautet Dein Anliegen?")
+#context = "Empathischer Hundetrainer mit ruhiger Stimme"
 
 
 # Connect to Weaviate Cloud using the API key
@@ -47,12 +47,13 @@ def query_weaviate(query):
     collection = client.collections.get("Article")
 
     result = collection.query.near_text(
-    query=query,
+    query="bellen",
     limit=2
     )
-    #return 
+    return result.objects 
     #for obj in result.objects:
     #    st.write((json.dumps(obj.properties, indent=2)))
+
 
 # Function to interact with OpenAI API for answering
 def get_openai_answer(query, context):
@@ -77,6 +78,7 @@ if query:
 
         # Log the raw Weaviate result to debug
         st.write(weaviate_result)  # This will show the raw result from Weaviate for debugging
+        
 
         if weaviate_result and 'data' in weaviate_result and 'Get' in weaviate_result['data'] and 'Article' in weaviate_result['data']['Get']:
             # Assuming your Weaviate data structure is correct, adjust 'content' if necessary
