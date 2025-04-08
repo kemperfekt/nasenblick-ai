@@ -15,10 +15,10 @@ weaviate_url = os.getenv("WEAVIATE_URL")  # Get Weaviate URL from .env
 weaviate_api_key = os.getenv("WEAVIATE_API_KEY")  # Get Weaviate API Key from .env
 
 # UI
-st.title("🐶 Nasenblick KI")
-st.write("Hier findest Du Hilfe bei der Erziehung Deines Hundes:")
+st.title("🐶 Nasenblick KI-Assistent")
+st.write("Hier findest Du Hilfe bei der Erziehung Deines Hundes.")
 
-query = st.text_input("Wie lautet Dein Anliegen?")
+query = st.text_input("Bitte stelle Deine Frage")
 #context = "Empathischer Hundetrainer mit ruhiger Stimme"
 
 
@@ -41,7 +41,7 @@ client = weaviate.connect_to_weaviate_cloud(
 
 # Check if the connection is working
 if client.is_ready():
-    st.success("Connected to Weaviate successfully!")
+    st.success("Verbindung zu Weaviate erfolgreich hergestellt.")
 
 # Retrieve articles from Weaviate (make sure collection name is correct)
     def query_weaviate(query):
@@ -105,7 +105,7 @@ def get_openai_answer(query, context):
         response = openai.chat.completions.create(
             model="gpt-4",  # You can use "gpt-3.5-turbo" or "gpt-4" depending on your choice
             messages=messages,
-            max_tokens=150
+            max_tokens=250
         )
 
         # Return the assistant's response
@@ -118,15 +118,10 @@ def get_openai_answer(query, context):
 
 
 if query:
-    st.write("Query:", query)
     with st.spinner("Ich denke nach..."):
         # Query Weaviate for relevant content
         weaviate_result = query_weaviate(query)
-        #st.write("weaviate_result:", weaviate_result)
-
-        # Log the raw Weaviate result to debug
-        #st.write(weaviate_result)  # This will show the raw result from Weaviate for debugging
-        
+        st.write("Weaviate:", weaviate_result)
 
         if weaviate_result:  # Check if the result is not empty
             # Assuming `weaviate_result` is a list of articles with 'title' and 'content'
