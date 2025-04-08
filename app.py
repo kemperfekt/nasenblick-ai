@@ -5,6 +5,7 @@ import weaviate
 #from weaviate.auth import AuthApiKey
 from weaviate.classes.init import Auth
 import openai
+from openai import OpenAI
 
 
 # 📌 Load environment variables from .env file
@@ -99,16 +100,21 @@ def get_openai_answer(query, context):
         {"role": "system", "content": "Du bist ein einfühlsamer Hundetrainer, wie ein Psychotherapeut."},
         {"role": "user", "content": f"Context: {context}\n\nQuestion: {query}"}
     ]
+    try:
+        # Use the ChatCompletion API (new API for GPT-3.5 / GPT-4)
+        response = openai.chat.completions.create(
+            model="gpt-4",  # You can use "gpt-3.5-turbo" or "gpt-4" depending on your choice
+            messages=messages,
+            max_tokens=150
+        )
 
-    # Use the ChatCompletion API (new API for GPT-3.5 / GPT-4)
-    response = openai.chat.completions.create(
-        model="gpt-4",  # You can use "gpt-3.5-turbo" or "gpt-4" depending on your choice
-        messages=messages,
-        max_tokens=150
-    )
+        # Return the assistant's response
+        #return response['choices'][0]['message']['content'].strip()
+        #return response.choices[0].message#['content'].strip()
+        return response.choices[0].message.content
 
-    # Return the assistant's response
-    return response['choices'][0]['message']['content'].strip()
+    except Exception as e:
+        return f"Error while generating answer: {e}"
 
 
 if query:
