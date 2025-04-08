@@ -121,12 +121,13 @@ if query:
     with st.spinner("Ich denke nach..."):
         # Query Weaviate for relevant content
         weaviate_result = query_weaviate(query)
-        st.write("Weaviate:", weaviate_result)
+        # st.write("Weaviate:", weaviate_result)
 
         if weaviate_result:  # Check if the result is not empty
             # Assuming `weaviate_result` is a list of articles with 'title' and 'content'
             context = "\n".join([doc['content'] for doc in weaviate_result])  # Access 'content' directly
-
+            st.write("Context:", context)
+            st.write("Query:", query)
             # Get the response from OpenAI
             answer = get_openai_answer(query, context)
             st.success(answer)
