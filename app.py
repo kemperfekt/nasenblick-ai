@@ -101,9 +101,9 @@ if query:
         #st.write(weaviate_result)  # This will show the raw result from Weaviate for debugging
         
 
-        if weaviate_result and 'data' in weaviate_result and 'Get' in weaviate_result['data'] and 'Article' in weaviate_result['data']['Get']:
-            # Assuming your Weaviate data structure is correct, adjust 'content' if necessary
-            context = "\n".join([doc['content'] for doc in weaviate_result['data']['Get']['Article']])
+        if weaviate_result:  # Check if the result is not empty
+            # Assuming `weaviate_result` is a list of articles with 'title' and 'content'
+            context = "\n".join([doc['content'] for doc in weaviate_result])  # Access 'content' directly
 
             # Get the response from OpenAI
             answer = get_openai_answer(query, context)
