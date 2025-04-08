@@ -58,9 +58,13 @@ if client.is_ready():
         # Extract 'title' and 'content' from each article object
         articles = []
         for obj in result.objects:
+            # Accessing properties using the 'properties' method
+            title = obj.properties.get('title', '') if hasattr(obj, 'properties') else ''
+            content = obj.properties.get('content', '') if hasattr(obj, 'properties') else ''
+        
             articles.append({
-                'title': obj['properties'].get('title', ''),
-                'content': obj['properties'].get('content', '')
+                'title': title,
+                'content': content
             })
 
         return articles
@@ -91,10 +95,10 @@ if query:
     with st.spinner("Ich denke nach..."):
         # Query Weaviate for relevant content
         weaviate_result = query_weaviate(query)
-        st.write("weaviate_result:", weaviate_result)
+        #st.write("weaviate_result:", weaviate_result)
 
         # Log the raw Weaviate result to debug
-        st.write(weaviate_result)  # This will show the raw result from Weaviate for debugging
+        #st.write(weaviate_result)  # This will show the raw result from Weaviate for debugging
         
 
         if weaviate_result and 'data' in weaviate_result and 'Get' in weaviate_result['data'] and 'Article' in weaviate_result['data']['Get']:
