@@ -101,7 +101,7 @@ def get_openai_answer(query, context):
     ]
 
     # Use the ChatCompletion API (new API for GPT-3.5 / GPT-4)
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4",  # You can use "gpt-3.5-turbo" or "gpt-4" depending on your choice
         messages=messages,
         max_tokens=150
