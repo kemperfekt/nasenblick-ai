@@ -76,19 +76,40 @@ if client.is_ready():
 
 
 # Function to interact with OpenAI API for answering
+#def get_openai_answer(query, context):
+#    # Set the OpenAI API key
+#    openai.api_key=openai_api_key#
+#
+#    # Use the Completion API
+#    response = openai.Completion.create(
+#        model="gpt-4",  # For GPT-3.5 or GPT-4, you can use different models as needed
+#        prompt=f"Context: {context}\n\nQuestion: {query}",
+#        max_tokens=150
+#    )
+#        # Return the text response from the model
+#    return response['choices'][0]['text'].strip()
+
+
 def get_openai_answer(query, context):
     # Set the OpenAI API key
-    openai.api_key=openai_api_key
+    openai.api_key = openai_api_key
 
-    # Use the Completion API
-    response = openai.Completion.create(
-        model="gpt-4",  # For GPT-3.5 or GPT-4, you can use different models as needed
-        prompt=f"Context: {context}\n\nQuestion: {query}",
+    # Define the messages for the chat model
+    messages = [
+        {"role": "system", "content": "Du bist ein einfühlsamer Hundetrainer, wie ein Psychotherapeut."},
+        {"role": "user", "content": f"Context: {context}\n\nQuestion: {query}"}
+    ]
+
+    # Use the ChatCompletion API (new API for GPT-3.5 / GPT-4)
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # You can use "gpt-3.5-turbo" or "gpt-4" depending on your choice
+        messages=messages,
         max_tokens=150
     )
-    
-    # Return the text response from the model
-    return response['choices'][0]['text'].strip()
+
+    # Return the assistant's response
+    return response['choices'][0]['message']['content'].strip()
+
 
 if query:
     st.write("Query:", query)
