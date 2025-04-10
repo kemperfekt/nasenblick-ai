@@ -16,16 +16,17 @@ client = OpenAI()
 # Button to trigger the response generation
 #if st.button('Get Answer'):
 if query:  # Ensure user query is not empty
-    # Pass the user input to the OpenAI responses.create function
-    response = client.responses.create(
-        model="gpt-4",  # You can replace this with the correct model you're using
-        input=query  # The user input
-    )
-    
-    # Get the output text from the response
-    answer = response.output[0].content[0].text
-    
-    # Display the response to the user
-    st.write(answer)
-else:
-    st.write("Please enter a question.")
+    with st.spinner("Ich denke nach..."):
+        # Pass the user input to the OpenAI responses.create function
+        response = client.responses.create(
+            model="gpt-4",  # You can replace this with the correct model you're using
+            input=query  # The user input
+        )
+        
+        # Get the output text from the response
+        answer = response.output[0].content[0].text
+        
+        # Display the response to the user
+        st.success(answer)
+#else:
+#    st.write("Please enter a question.")
